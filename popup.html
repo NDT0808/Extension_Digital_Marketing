@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dog Bot Status</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        body {
+            width: 320px;
+            margin: 0;
+            padding: 16px;
+            background: linear-gradient(135deg, #1e1e2f 0%, #151522 100%);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+        }
+        h2 { margin: 0 0 16px; font-size: 18px; text-align: center; font-weight: 600; color: #64ffda; }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .status { font-size: 13px; color: #a8b2d1; margin-bottom: 8px; line-height: 1.4; }
+        .pred-bar { margin: 8px 0; }
+        .pred-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+        .bar-bg { background: #2a2a40; border-radius: 4px; height: 8px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; transition: width 0.3s ease; }
+        .fill-puppy { background: #ff79c6; }
+        .fill-adult { background: #8be9fd; }
+        .fill-none { background: #ff5555; }
+        
+        .btn {
+            display: block; width: 100%; padding: 10px; border: none; border-radius: 6px;
+            background: #64ffda; color: #0f172a; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #52e0c4; transform: translateY(-1px); }
+        .btn.off { background: #ff5555; color: white; }
+        .btn.off:hover { background: #ff4444; }
+    </style>
+</head>
+<body>
+    <h2>🐶 FB Reels Dog Bot</h2>
+    
+    <div class="card">
+        <div class="status" id="status-text">Đang kết nối tới trang... (Hãy mở FB Reels)</div>
+    </div>
+
+    <div class="card">
+        <div class="pred-bar">
+            <div class="pred-label"><span>Adult Dog</span><span id="pct-adult">0%</span></div>
+            <div class="bar-bg"><div class="bar-fill fill-adult" id="bar-adult"></div></div>
+        </div>
+        <div class="pred-bar">
+            <div class="pred-label"><span>Puppy</span><span id="pct-puppy">0%</span></div>
+            <div class="bar-bg"><div class="bar-fill fill-puppy" id="bar-puppy"></div></div>
+        </div>
+        <div class="pred-bar">
+            <div class="pred-label"><span>Non Dog (Rác)</span><span id="pct-none">0%</span></div>
+            <div class="bar-bg"><div class="bar-fill fill-none" id="bar-none"></div></div>
+        </div>
+    </div>
+
+    <button class="btn" id="toggle-btn">TẠM DỪNG BOT</button>
+
+    <script src="popup.js"></script>
+</body>
+</html>
