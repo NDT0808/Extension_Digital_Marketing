@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FB CSV Scraper</title>
+    <style>
+        body { width: 320px; font-family: sans-serif; padding: 15px; background: #0f172a; color: #e2e8f0; }
+        h2 { text-align: center; color: #38bdf8; margin-top: 0; }
+        .btn { width: 100%; padding: 10px; margin-top: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-start { background: #ec4899; color: white; }
+        .btn-stop { background: #64748b; color: white; }
+        .btn-export { background: #10b981; color: white; }
+        .btn-clear { background: #ef4444; color: white; }
+        .status { margin-top: 15px; font-size: 13px; color: #cbd5e1; }
+        input[type="file"] { margin-top: 10px; width: 100%; color: #fff; }
+        .flex { display: flex; gap: 8px; }
+        .flex .btn { flex: 1; }
+    </style>
+</head>
+<body>
+    <h2>FB CSV Scraper</h2>
+    <label>Upload CSV File:</label>
+    <input type="file" id="csv-file" accept=".csv">
+    
+    <div class="status" id="status-text">Ready.</div>
+    
+    <div class="flex">
+        <button class="btn btn-start" id="btn-start">START</button>
+        <button class="btn btn-stop" id="btn-stop">STOP</button>
+    </div>
+    <div class="flex">
+        <button class="btn btn-export" id="btn-export" style="display: none;">EXPORT CSV</button>
+        <button class="btn btn-clear" id="btn-clear">CLEAR DATA</button>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{
+  "phases": [
+    {
+      "id": "p1",
+      "phaseName": "第一阶段 - 自动运行 Facebook 互动机器人",
+      "timeRange": "上午",
+      "role": "1* 监控与部署",
+      "tasks": [
+        {
+          "id": "t1-1",
+          "text": "1.1* 继续在Facebook上运行自动点赞和关注机器人，监控封号风险，为在主粉丝页上的实际部署做准备 (完成 80%)"
+        },
+        {
+          "id": "t1-2",
+          "text": "1.2* 经过4天的测试得出结论：第一天发现点赞限制约为50次/天；第四天（10月06日）测试得出关注限制约为300次/天"
+        }
+      ],
+      "metricName": "运营测试",
+      "calculationMethod": "确保系统的稳定性与账号安全",
+      "maxScore": 10,
+      "startTime": 8,
+      "endTime": 12,
+      "color": "bg-blue-500"
+    },
+    {
+      "id": "p2",
+      "phaseName": "第二阶段 - 潜在客户数据收集与清理",
+      "timeRange": "下午",
+      "role": "2* 数据抓取与过滤",
+      "tasks": [
+        {
+          "id": "t2-1",
+          "text": "2.1* 从 Facebook 收集数据并筛选美国市场的潜在客户，提取电话、姓名、电子邮件、邮政编码、国家等字段，用于Facebook广告和销售对接 (完成 70%)"
+        },
+        {
+          "id": "t2-2",
+          "text": "2.2* 困难与目的：抓取的数据较为大众化且缺失部分信息。目前的主要目的是通过反复互动提高粉丝页排名和流量，从而加快成单率"
+        }
+      ],
+      "metricName": "数据采集",
+      "calculationMethod": "提取有效客户字段并增加粉丝页流量",
+      "maxScore": 10,
+      "startTime": 13,
+      "endTime": 16,
+      "color": "bg-indigo-600"
+    },
+    {
+      "id": "p3",
+      "phaseName": "第三阶段 - AI 客户评分机器人开发",
+      "timeRange": "晚上",
+      "role": "3* AI评分与漏斗建设",
+      "tasks": [
+        {
+          "id": "t3-1",
+          "text": "3.1* 建立并完善销售漏斗：20,000 Leads ↓ AI Data Cleaning ↓ AI Lead Scoring ↓ Email Marketing ↓ Website Tracking ↓ High-Intent Lead ↓ Sales Call ↓ Sample ↓ Quotation ↓ Order... (完成 50%)"
+        },
+        {
+          "id": "t3-2",
+          "text": "3.2* 使用 YOLO 图像识别模型识别网站上是否有狗的图片，以确认是否为繁育者 (Breeder) 网站"
+        },
+        {
+          "id": "t3-3",
+          "text": "3.3* 使用 Gemini API 识别网站关键字和登记表单，但目前遇到 API 额度限制 (Rate Limits) 挑战"
+        },
+        {
+          "id": "t3-4",
+          "text": "3.4* 寻找其他不受限制的替代 AI 模型，或者考虑从零开始构建数据集自行训练机器学习模型"
+        }
+      ],
+      "metricName": "AI 集成",
+      "calculationMethod": "AI 评分工具的准确率及销售漏斗自动化程度",
+      "maxScore": 10,
+      "startTime": 16,
+      "endTime": 20,
+      "color": "bg-emerald-500"
+    }
+  ],
+  "dayState": {
+    "completedTasks": [
+      "t1-1",
+      "t1-2",
+      "t2-1",
+      "t2-2",
+      "t3-1"
+    ],
+    "scores": {},
+    "executorName": "Trong",
+    "importedFileName": "Trong_2026-10_02.json"
+  },
+  "version": "1.6",
+  "timestamp": "2026-10-06T23:00:00.000Z"
+}

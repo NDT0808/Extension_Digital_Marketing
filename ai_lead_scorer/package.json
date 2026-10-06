@@ -1,0 +1,20 @@
+{
+  "name": "ai_lead_scorer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/genai": "^2.27.0",
+    "csv-parse": "^7.0.3",
+    "csv-stringify": "^6.9.0",
+    "dotenv": "^18.0.5",
+    "puppeteer": "^25.12.0"
+  }
+}

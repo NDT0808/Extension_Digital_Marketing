@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "FB CSV Contact Scraper",
+  "version": "1.0",
+  "description": "Scrapes Facebook profiles and external websites from a CSV file.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FB CSV Contact Scraper"
+  }
+}
