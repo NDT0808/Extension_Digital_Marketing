@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "AI Lead Scorer - Intent Detector",
+  "version": "1.0",
+  "description": "Phân tích website đang mở xem có bán chó, form đăng ký, take home kit hay không.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

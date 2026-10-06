@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Intent Detector</h1>
+      <p class="subtitle">AI Lead Scorer</p>
+    </div>
+
+    <div class="main-content">
+      <button id="scan-btn" class="scan-btn">
+        <span class="btn-text">🔍 Phân Tích Trang Này</span>
+        <div class="loader" id="loader"></div>
+      </button>
+
+      <div id="results" class="results hidden">
+        <div class="result-item" id="res-dogs">
+          <div class="icon">🐶</div>
+          <div class="details">
+            <span class="label">Bán chó thật</span>
+            <span class="value badge">-</span>
+          </div>
+        </div>
+        
+        <div class="result-item" id="res-form">
+          <div class="icon">📝</div>
+          <div class="details">
+            <span class="label">Có Form đăng ký</span>
+            <span class="value badge">-</span>
+          </div>
+        </div>
+
+        <div class="result-item" id="res-kit">
+          <div class="icon">🎁</div>
+          <div class="details">
+            <span class="label">Có Take home kit</span>
+            <span class="value badge">-</span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="error-msg" class="error-msg hidden"></div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
