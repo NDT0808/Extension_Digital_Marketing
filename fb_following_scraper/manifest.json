@@ -1,10 +1,13 @@
 {
   "manifest_version": 3,
   "name": "FB Following Scraper",
-  "version": "1.1.0",
-  "description": "Xuất danh sách người bạn đang theo dõi trên Facebook ra file CSV",
-  "permissions": ["activeTab"],
+  "version": "2.1.0",
+  "description": "Cào hàng loạt danh sách người đang theo dõi (Có lưu tạm thời chống mất dữ liệu)",
+  "permissions": ["activeTab", "tabs", "storage", "unlimitedStorage"],
   "host_permissions": ["https://www.facebook.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": { "default_popup": "popup.html" },
   "content_scripts": [
     {

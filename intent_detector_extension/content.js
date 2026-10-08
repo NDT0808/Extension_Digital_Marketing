@@ -1,76 +1,46 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "scan_intent") {
-    try {
-      const result = analyzePage();
-      sendResponse({ success: true, data: result });
-    } catch (error) {
-      sendResponse({ success: false, error: error.message });
-    }
+  if (request.action === "scan_page_step") {
+    performScan()
+      .then(data => sendResponse({ success: true, data }))
+      .catch(e => sendResponse({ success: false, error: e.toString() }));
   }
-  return true; 
+  return true;
 });
 
-function analyzePage() {
-  const keywords = {
-    selling_dogs: [
-        "puppies for sale", "available puppies", "upcoming litters", "buy a puppy",
-        "reserve a puppy", "puppy application", "health guarantee", "akc registered",
-        "place a deposit", "adopt a puppy", "our dogs", "sires and dams",
-        "puppies expected", "stud service", "adoption fee"
-    ],
-    forms: [
-        "puppy application", "waitlist application", "adoption form", 
-        "apply for a puppy", "contact form", "questionnaire", 
-        "fill out the form", "application form"
-    ],
-    take_home_kit: [
-        "take home kit", "puppy pack", "starter kit", "blanket with mom's scent",
-        "mom's scent", "food sample", "bag of food", "puppy supplies",
-        "microchipped", "first round of shots", "vet checked", "dewormed"
-    ]
-  };
+async function performScan() {
+  // Cuộn xuống từ từ để kích hoạt lazy loading và cho người dùng thấy trang đang được phân tích
+  await new Promise((resolve) => {
+    let totalHeight = 0;
+    let distance = 400; // Mỗi bước cuộn 400px
+    let timer = setInterval(() => {
+      let scrollHeight = document.body.scrollHeight;
+      window.scrollBy(0, distance);
+      totalHeight += distance;
 
-  // 1. Lấy toàn bộ nội dung text hiển thị trên trang hiện tại
-  // Dùng document.body.innerText sẽ lấy được nội dung đã render bởi React/Vue
-  const textContent = document.body.innerText.toLowerCase();
-  
-  // 2. Tìm xem có thẻ form nào không
-  const formElements = document.querySelectorAll("form, iframe[src*='form'], iframe[src*='typeform'], iframe[src*='docs.google.com/forms']");
-  let has_form_tag = formElements.length > 0;
-
-  let sells_dogs = false;
-  let has_form = false;
-  let has_take_home_kit = false;
-
-  // 3. So khớp từ khóa
-  for (let kw of keywords.selling_dogs) {
-    if (textContent.includes(kw)) {
-      sells_dogs = true;
-      break;
-    }
-  }
-
-  if (has_form_tag) {
-    has_form = true;
-  } else {
-    for (let kw of keywords.forms) {
-      if (textContent.includes(kw)) {
-        has_form = true;
-        break;
+      // Dừng lại khi chạm đáy, hoặc đã cuộn quá 5000px (để tránh vô tận)
+      if (totalHeight >= scrollHeight - window.innerHeight || totalHeight > 5000) {
+        clearInterval(timer);
+        resolve();
       }
-    }
-  }
+    }, 250); // Dừng 250ms giữa các lần cuộn để nó cuộn chậm lại
+  });
 
-  for (let kw of keywords.take_home_kit) {
-    if (textContent.includes(kw)) {
-      has_take_home_kit = true;
-      break;
-    }
-  }
+  // Chờ 0.5s sau khi cuộn đến đáy để JS có thể render thêm 
+  await new Promise(r => setTimeout(r, 500));
+
+  // Gom chữ trên trang
+  const textContent = document.body.innerText.toLowerCase();
+
+  // Tìm form
+  const formElements = document.querySelectorAll("form, iframe[src*='form'], iframe[src*='typeform'], iframe[src*='docs.google.com/forms']");
+  const has_form_tag = formElements.length > 0;
+
+  // Tìm các thẻ link (nav bar) để gửi về cho Dashboard phân tích trang con
+  const links = Array.from(document.querySelectorAll("a[href]")).map(a => a.href);
 
   return {
-    sells_dogs,
-    has_form,
-    has_take_home_kit
+    text: textContent,
+    has_form: has_form_tag,
+    links: links
   };
 }

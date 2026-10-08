@@ -43,6 +43,10 @@ document.getElementById('scan-btn').addEventListener('click', async () => {
   }
 });
 
+document.getElementById('open-dashboard-btn').addEventListener('click', () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html") });
+});
+
 function updateBadge(elementId, isYes) {
   const badge = document.querySelector(`#${elementId} .badge`);
   badge.textContent = isYes ? "CÓ" : "KHÔNG";

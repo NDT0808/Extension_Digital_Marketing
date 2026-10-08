@@ -1,0 +1,77 @@
+{
+  "phases": [
+    {
+      "id": "p1",
+      "phaseName": "第一阶段 - 自动运行 Facebook 互动机器人与数据过滤",
+      "timeRange": "上午",
+      "role": "1* 监控与过滤",
+      "tasks": [
+        {
+          "id": "t1-1",
+          "text": "1.1* 过滤第一批数据：100% 筛选出第一轮互动过的用户列表 (完成 100%)"
+        },
+        {
+          "id": "t1-2",
+          "text": "1.2* 过滤第二批数据：通过关注数、信息完整度等指标再次筛选高潜力客户 (完成 50%)"
+        }
+      ],
+      "metricName": "数据过滤",
+      "calculationMethod": "确保潜在客户的可靠性与有效性",
+      "maxScore": 10,
+      "startTime": 8,
+      "endTime": 12,
+      "color": "bg-blue-500"
+    },
+    {
+      "id": "p2",
+      "phaseName": "第二阶段 - 网站意图识别与 AI 评分模型优化",
+      "timeRange": "下午",
+      "role": "2* 模型优化与意图识别",
+      "tasks": [
+        {
+          "id": "t2-1",
+          "text": "2.1* 优化功能：使用 Playwright 替代 BeautifulSoup，通过关键词或图像识别网站是否卖狗、有无注册表单或狗用品 (完成 80%)"
+        },
+        {
+          "id": "t2-2",
+          "text": "2.2* 整理 AI 运营模型的评分标准，以构建基于 RAG 架构的 AI 评分模型 (完成 50%)"
+        }
+      ],
+      "metricName": "模型开发",
+      "calculationMethod": "提高网站意图识别的准确率",
+      "maxScore": 10,
+      "startTime": 13,
+      "endTime": 16,
+      "color": "bg-indigo-600"
+    },
+    {
+      "id": "p3",
+      "phaseName": "第三阶段 - 构建多智能体数字营销自动化流程",
+      "timeRange": "晚上",
+      "role": "3* 多智能体流程建设",
+      "tasks": [
+        {
+          "id": "t3-1",
+          "text": "3.1* 开发并构建 Multi-Agent (多智能体) 技能，以执行和标准化数字营销的自动化工作流 (完成 50%)"
+        }
+      ],
+      "metricName": "流程自动化",
+      "calculationMethod": "实现数字营销流程的标准化与自动化",
+      "maxScore": 10,
+      "startTime": 16,
+      "endTime": 20,
+      "color": "bg-emerald-500"
+    }
+  ],
+  "dayState": {
+    "completedTasks": [
+      "t1-1",
+      "t2-1"
+    ],
+    "scores": {},
+    "executorName": "Trong",
+    "importedFileName": "Trong_2026-10_06.json"
+  },
+  "version": "1.7",
+  "timestamp": "2026-10-07T23:00:00.000Z"
+}

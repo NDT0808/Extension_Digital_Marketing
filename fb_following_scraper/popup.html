@@ -3,16 +3,33 @@
 <head>
   <meta charset="utf-8">
   <style>
-    body { width: 240px; font-family: sans-serif; padding: 10px; }
-    button { width: 100%; margin-bottom: 8px; padding: 8px; cursor: pointer; }
-    button:disabled { cursor: not-allowed; }
-    #status { font-size: 13px; color: #555; }
+    body { width: 300px; font-family: sans-serif; padding: 10px; }
+    button { width: 100%; margin-bottom: 8px; padding: 8px; cursor: pointer; font-weight: bold; }
+    button:disabled { cursor: not-allowed; opacity: 0.5; }
+    textarea { width: 100%; height: 100px; margin-bottom: 8px; font-size: 11px; padding: 5px; box-sizing: border-box; }
+    #status { font-size: 13px; color: #555; margin-top: 10px; font-weight: bold; }
+    .auto-mode { border: 2px solid #4CAF50; padding: 10px; border-radius: 5px; background: #f9fff9; }
   </style>
 </head>
 <body>
+  <h3>Chế độ 1 URL (Trang hiện tại)</h3>
   <button id="btnStart">Bắt đầu cào</button>
   <button id="btnStop" disabled>Dừng</button>
   <button id="btnExport" disabled>Xuất CSV (0)</button>
+
+  <hr/>
+
+  <div class="auto-mode">
+    <h3>Chế độ Hàng Loạt (Auto links)</h3>
+    <p style="font-size: 11px; margin-top: -10px;">Copy danh sách Link Profile dán vào đây</p>
+    <textarea id="urlList" placeholder="https://www.facebook.com/profile1&#10;https://www.facebook.com/profile.php?id=123"></textarea>
+    <button id="btnAutoStart" style="background: #4CAF50; color: white;">Bắt đầu Mới (Xóa cũ)</button>
+    
+    <button id="btnResume" style="background: #ff9800; color: white; display: none;">Tiếp tục cào (từ điểm dừng)</button>
+    <button id="btnClear" style="background: #f44336; color: white; display: none;">Xóa bộ nhớ tạm</button>
+    <button id="btnRescue" style="background: #9c27b0; color: white; margin-top: 10px; border: 2px solid #fff;">🆘 Cứu Hộ Dữ Liệu (Bị Kẹt)</button>
+  </div>
+
   <div id="status">Trạng thái: Sẵn sàng</div>
   <script src="popup.js"></script>
 </body>

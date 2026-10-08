@@ -5,7 +5,11 @@
   "description": "Phân tích website đang mở xem có bán chó, form đăng ký, take home kit hay không.",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html"

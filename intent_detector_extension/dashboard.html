@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --bg: #0F172A;
+      --card: #1E293B;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --success: #10B981;
+      --danger: #EF4444;
+    }
+    body {
+      margin: 0; padding: 40px; font-family: 'Inter', sans-serif;
+      background: var(--bg); color: var(--text);
+    }
+    .container {
+      max-width: 1000px; margin: 0 auto;
+    }
+    h1 {
+      background: linear-gradient(135deg, #A5B4FC, #818CF8, #C4B5FD);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-top: 0;
+    }
+    .panel {
+      background: var(--card); border-radius: 12px; padding: 24px; margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.05);
+    }
+    textarea {
+      width: 100%; height: 150px; background: rgba(15,23,42,0.5);
+      border: 1px solid rgba(255,255,255,0.1); color: var(--text);
+      border-radius: 8px; padding: 12px; font-family: monospace; resize: vertical;
+      box-sizing: border-box; font-size: 14px;
+    }
+    .row { display: flex; gap: 16px; margin-top: 16px; align-items: center; }
+    button {
+      padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; font-size: 15px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #818CF8); color: white;
+    }
+    .btn-primary:hover { box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1); color: white;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    
+    .stats {
+      display: flex; gap: 32px; color: var(--muted); font-size: 14px; margin-left: auto;
+    }
+    .stats span { font-weight: 600; color: var(--text); font-size: 16px; margin-left: 4px; }
+    
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 20px;
+      background: var(--card); border-radius: 12px; overflow: hidden;
+    }
+    th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    th { background: rgba(255,255,255,0.02); color: var(--muted); font-weight: 500; font-size: 13px; text-transform: uppercase; }
+    td { font-size: 14px; }
+    .status {
+      padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    }
+    .status.yes { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status.no { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .status.loading { background: rgba(255, 255, 255, 0.1); color: #FFF; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .status.error { background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Bulk Intent Scanner</h1>
+    
+    <div class="panel">
+      <label style="display: block; margin-bottom: 8px; color: var(--muted); font-size: 14px;">Nhập danh sách website (mỗi dòng 1 link hoặc phân cách bằng dấu phẩy):</label>
+      <textarea id="url-input" placeholder="https://marthadach.com/&#10;https://example.com/"></textarea>
+      
+      <div class="row">
+        <button id="start-btn" class="btn-primary">Bắt Đầu Quét Tự Động (Max 5 Tab)</button>
+        <button id="export-btn" class="btn-secondary" style="display: none;">Tải Kết Quả (CSV)</button>
+        
+        <div class="stats">
+          <div>Đang quét: <span id="stat-active">0</span></div>
+          <div>Hoàn thành: <span id="stat-done">0</span></div>
+          <div>Tổng số: <span id="stat-total">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Website</th>
+          <th>Bán Chó</th>
+          <th>Form Đăng Ký</th>
+          <th>Take Home Kit</th>
+          <th>Trạng Thái</th>
+        </tr>
+      </thead>
+      <tbody id="results-body">
+        <!-- Rows will be added here -->
+      </tbody>
+    </table>
+  </div>
+  <script src="dashboard.js"></script>
+</body>
+</html>
