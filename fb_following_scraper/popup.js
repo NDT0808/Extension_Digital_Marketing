@@ -1,115 +1,130 @@
 let currentTabId = null;
+let lastRenderedState = {};
+const $ = (id) => document.getElementById(id);
+const btnStart = $('btnStart');
+const btnStop = $('btnStop');
+const btnExport = $('btnExport');
+const btnAutoStart = $('btnAutoStart');
+const btnResume = $('btnResume');
+const btnClear = $('btnClear');
+const btnDiscardSession = $('btnDiscardSession');
+const urlListText = $('urlList');
+const statusText = $('statusText');
 
-const btnStart = document.getElementById('btnStart');
-const btnStop = document.getElementById('btnStop');
-const btnExport = document.getElementById('btnExport');
-const btnAutoStart = document.getElementById('btnAutoStart');
-const btnResume = document.getElementById('btnResume');
-const btnClear = document.getElementById('btnClear');
-const btnRescue = document.getElementById('btnRescue');
-const urlListText = document.getElementById('urlList');
-const statusDiv = document.getElementById('status');
+function render(state = {}) {
+  state = { ...lastRenderedState, ...state };
+  lastRenderedState = state;
+  const count = state.count || state.savedCount || 0;
+  const running = Boolean(state.running || state.autoRunning);
+  $('currentCount').textContent = count.toLocaleString('vi-VN');
+  $('runState').textContent = running ? 'Đang chạy' : (state.hasCheckpoint ? 'Đã lưu' : 'Sẵn sàng');
+  $('sessionBadge').textContent = state.hasCheckpoint ? `Đã lưu ${count} profile` : 'Chưa có phiên lưu';
+  btnStart.disabled = running;
+  btnStart.textContent = state.hasCheckpoint ? 'Tiếp tục phiên này' : 'Bắt đầu cào';
+  btnStop.disabled = !running;
+  btnExport.disabled = count === 0;
+  btnExport.textContent = `Xuất CSV (${count.toLocaleString('vi-VN')})`;
+  btnDiscardSession.style.display = state.hasCheckpoint && !running ? 'block' : 'none';
 
-function render(state) {
-  btnStart.disabled = state.running || state.autoRunning;
-  btnStop.disabled = !(state.running || state.autoRunning);
-  btnExport.disabled = state.count === 0 && !state.autoRunning;
-  btnExport.innerText = `Xuất CSV (${state.count || 0})`;
-  
+  const hasBatch = Boolean(state.hasSavedData);
+  btnResume.style.display = hasBatch && !state.autoRunning ? 'block' : 'none';
+  btnClear.style.display = hasBatch && !state.autoRunning ? 'block' : 'none';
+  if (hasBatch) btnResume.textContent = `Tiếp tục link ${(state.savedIndex || 0) + 1}/${state.savedTotal || 0}`;
+
   if (state.autoRunning) {
-    statusDiv.innerText = `ĐANG CÀO TỰ ĐỘNG: Hoàn thành ${state.currentIndex}/${state.totalUrls} profiles.`;
-    statusDiv.style.color = 'green';
+    statusText.textContent = `Đang cào hàng loạt: ${state.currentIndex || 0}/${state.totalUrls || 0} link • ${count} profile • khoảng 300–350/trang.`;
   } else {
-    statusDiv.innerText = 'Trạng thái: ' + (state.status || (state.running ? 'Đang cào...' : 'Sẵn sàng'));
-    statusDiv.style.color = '#555';
-  }
-
-  // Xử lý hiển thị nút Resume nếu có dữ liệu lưu tạm
-  if (state.hasSavedData && !state.autoRunning) {
-      btnResume.style.display = 'block';
-      btnClear.style.display = 'block';
-      btnResume.innerText = `Tiếp tục cào (Link ${state.savedIndex + 1}/${state.savedTotal})`;
-  } else {
-      btnResume.style.display = 'none';
-      btnClear.style.display = 'none';
+    statusText.textContent = state.status || (state.hasCheckpoint
+      ? `Phiên tạm đã sẵn sàng. Bấm “Tiếp tục phiên này” để chạy từ vị trí đã lưu.`
+      : 'Sẵn sàng. Dữ liệu sẽ tự động lưu sau mỗi batch.');
   }
 }
 
-function send(action, data = {}, cb) {
+function sendTab(action, cb, allowInject = true) {
   if (currentTabId == null) return;
-  if (action === 'START_AUTO' || action === 'RESUME_AUTO') {
-      chrome.runtime.sendMessage({ action: action, urls: data.urls, tabId: currentTabId }, (res) => {
-          if(cb) cb(res);
-      });
-      return;
-  }
-  
   chrome.tabs.sendMessage(currentTabId, { action }, (res) => {
-    if (chrome.runtime.lastError) {
-      statusDiv.innerText = 'Lỗi: hãy mở facebook.com và F5 trang lại.';
+    const messageError = chrome.runtime.lastError;
+    if (!messageError) {
+      if (cb) cb(res || {});
       return;
     }
-    if (cb) cb(res);
+
+    if (!allowInject) {
+      statusText.textContent = 'Không thể kết nối. Hãy kiểm tra tab hiện tại đang mở facebook.com.';
+      return;
+    }
+
+    statusText.textContent = 'Đang kết nối extension với trang Facebook...';
+    chrome.scripting.executeScript({
+      target: { tabId: currentTabId },
+      files: ['content.js']
+    }, () => {
+      if (chrome.runtime.lastError) {
+        statusText.textContent = 'Không thể chạy trên tab này. Hãy mở facebook.com rồi thử lại.';
+        return;
+      }
+      setTimeout(() => sendTab(action, cb, false), 150);
+    });
   });
 }
 
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+function sendBackground(action, data = {}, cb) {
+  chrome.runtime.sendMessage({ action, ...data, tabId: currentTabId }, (res) => {
+    if (cb) cb(res || {});
+  });
+}
+
+chrome.tabs.query({ active:true, currentWindow:true }, (tabs) => {
   if (!tabs[0]) return;
   currentTabId = tabs[0].id;
-  
-  chrome.runtime.sendMessage({action: 'GET_BACKGROUND_STATE'}, (bState) => {
-      if (bState && (bState.autoRunning || bState.hasSavedData)) {
-          render(bState);
-      } else {
-          send('GET_STATE', {}, (res) => res && render(res));
-      }
+  sendTab('GET_STATE', (contentState) => {
+    sendBackground('GET_BACKGROUND_STATE', {}, (batchState) => render({ ...contentState, ...batchState,
+      count: contentState.count || batchState.count || 0,
+      status: contentState.status,
+      hasCheckpoint: contentState.hasCheckpoint
+    }));
   });
 });
 
-btnStart.addEventListener('click', () => send('START', {}, (res) => res && render(res)));
+btnStart.addEventListener('click', () => sendTab('START', render));
 btnStop.addEventListener('click', () => {
-    chrome.runtime.sendMessage({action: 'STOP_AUTO'}); 
-    send('STOP', {}, (res) => res && render(res));
+  sendBackground('STOP_AUTO');
+  sendTab('STOP', render);
 });
-btnExport.addEventListener('click', () => send('EXPORT'));
+btnExport.addEventListener('click', () => {
+  if ((lastRenderedState.totalUrls || 0) > 0 && (lastRenderedState.count || 0) > 0) {
+    sendBackground('RESCUE_DATA', {}, render);
+  } else {
+    sendTab('EXPORT');
+  }
+});
+btnDiscardSession.addEventListener('click', () => {
+  if (confirm('Xóa dữ liệu tạm của trang hiện tại?')) sendTab('CLEAR_CHECKPOINT', render);
+});
+const linkFile = $("linkFile");
+linkFile.addEventListener("change", async () => {
+  const file = linkFile.files && linkFile.files[0];
+  if (!file) return;
+  const text = await file.text();
+  const urls = [...new Set(text.split(/\r?\n/).map((u) => u.trim()).filter((u) => /^https?:\/\/(www\.)?facebook\.com\//i.test(u)))];
+  urlListText.value = urls.join("\n");
+  statusText.textContent = `Đã nạp ${urls.length.toLocaleString("vi-VN")} link từ ${file.name}.`;
+});
 
 btnAutoStart.addEventListener('click', () => {
-    const urls = urlListText.value.split('\n').map(u => u.trim()).filter(u => u !== '');
-    if (urls.length === 0) {
-        alert("Vui lòng nhập ít nhất 1 link!");
-        return;
-    }
-    if(confirm("Hành động này sẽ XÓA dữ liệu cũ và bắt đầu lại từ link số 1. Bạn có chắc không?")) {
-        statusDiv.innerText = "Chuẩn bị cào tự động hàng loạt...";
-        send('START_AUTO', {urls: urls}, (res) => render(res));
-    }
+  const urls = [...new Set(urlListText.value.split('\n').map((u) => u.trim()).filter(Boolean))];
+  if (!urls.length) return alert('Vui lòng nhập ít nhất một link.');
+  if (confirm('Bắt đầu danh sách mới sẽ thay thế phiên hàng loạt cũ. Tiếp tục?')) {
+    statusText.textContent = 'Đang chuẩn bị phiên hàng loạt...';
+    sendBackground('START_AUTO', { urls }, render);
+  }
 });
-
-btnResume.addEventListener('click', () => {
-    statusDiv.innerText = "Đang khôi phục dữ liệu...";
-    send('RESUME_AUTO', {}, (res) => render(res));
-});
-
+btnResume.addEventListener('click', () => sendBackground('RESUME_AUTO', {}, render));
 btnClear.addEventListener('click', () => {
-    if(confirm("Bạn có chắc muốn xóa bộ nhớ tạm? Dữ liệu chưa xuất sẽ bị mất!")) {
-        chrome.runtime.sendMessage({action: 'CLEAR_DATA'}, (res) => render(res));
-    }
-});
-
-btnRescue.addEventListener('click', () => {
-    statusDiv.innerText = "Đang lấy dữ liệu kẹt trong ổ cứng...";
-    send('FORCE_DOWNLOAD_FROM_STORAGE');
+  if (confirm('Xóa toàn bộ phiên hàng loạt đang lưu?')) sendBackground('CLEAR_DATA', {}, render);
 });
 
 chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.action === 'STATE') render(msg.state);
-  if (msg.action === 'AUTO_STATE') render(msg.state);
-  if (msg.action === 'PROGRESS') {
-      statusDiv.innerText = msg.message;
-      if (msg.message.includes('thành công')) {
-          statusDiv.style.color = '#4CAF50';
-      } else {
-          statusDiv.style.color = '#9c27b0';
-      }
-  }
+  if (msg.action === 'STATE' || msg.action === 'AUTO_STATE') render(msg.state);
+  if (msg.action === 'PROGRESS') statusText.textContent = msg.message;
 });

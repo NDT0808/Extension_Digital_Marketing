@@ -20,13 +20,21 @@ async function loadState() {
 }
 
 function saveState() {
-  chrome.storage.local.set({
-    urlList: urlList,
-    currentIndex: currentIndex,
-    allData: allData,
-    isAutoRunning: isAutoRunning,
-    targetTabId: targetTabId
-  });
+  try {
+    chrome.storage.local.set({
+      urlList: urlList,
+      currentIndex: currentIndex,
+      allData: allData,
+      isAutoRunning: isAutoRunning,
+      targetTabId: targetTabId
+    }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Lỗi khi lưu storage (có thể do dữ liệu quá lớn):", chrome.runtime.lastError);
+      }
+    });
+  } catch (e) {
+    console.error("Lỗi Exception khi lưu state:", e);
+  }
 }
 
 // Chạy loadState một lần khi script khởi động
@@ -86,7 +94,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   else if (msg.action === 'RESCUE_DATA') {
     loadState().then(() => {
-      exportAllData(false);
+      exportAllData(false, msg.tabId);
     });
     return true;
   }
@@ -103,6 +111,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     });
     return true;
   }
+  else if (msg.action === 'RELOAD_CURRENT_PAGE') {
+    if (sender && sender.tab) {
+      chrome.tabs.reload(sender.tab.id);
+    } else if (targetTabId) {
+      chrome.tabs.reload(targetTabId);
+    }
+    sendResponse({status: "reloading"});
+  }
 });
 
 function handleAutoFinished(data) {
@@ -115,15 +131,18 @@ function handleAutoFinished(data) {
     }
     currentIndex++;
     
-    if (currentIndex % 30 === 0) {
-        exportAllData(true); 
-    }
+    let waitTime = 1000;
 
     saveState();
     pushAutoState();
     
-    const waitTime = Math.floor(Math.random() * (6000 - 3000 + 1)) + 3000;
-    setTimeout(processNext, waitTime);
+    setTimeout(() => {
+        try {
+            processNext();
+        } catch(e) {
+            console.error("Lỗi trong processNext:", e);
+        }
+    }, waitTime);
 }
 
 function getAutoState() {
@@ -139,7 +158,13 @@ function getAutoState() {
 }
 
 function pushAutoState() {
-  chrome.runtime.sendMessage({ action: 'AUTO_STATE', state: getAutoState() }).catch(() => {});
+  try {
+    chrome.runtime.sendMessage({ action: 'AUTO_STATE', state: getAutoState() }).catch((e) => {
+      // Bỏ qua lỗi kết nối
+    });
+  } catch (e) {
+    console.error("Lỗi khi pushAutoState:", e);
+  }
 }
 
 function processNext() {
@@ -154,43 +179,43 @@ function processNext() {
   }
 
   let originalUrl = urlList[currentIndex].trim();
-  let targetUrl = "";
+  let targetUrl = originalUrl;
   
   if (originalUrl.includes("profile.php?id=")) {
-    // Tài khoản cá nhân dạng ?id=xxx
-    targetUrl = originalUrl + "&sk=following";
-  } else if (
-    originalUrl.endsWith("/following") || 
-    originalUrl.endsWith("/followers") ||
-    originalUrl.includes("/followers/") ||
-    originalUrl.includes("/following/")
-  ) {
-    // URL đã chỉ định rõ trang following/followers rồi -> dùng thẳng
-    targetUrl = originalUrl;
+    if (!originalUrl.includes('sk=following') && !originalUrl.includes('sk=followers')) {
+      const joiner = originalUrl.includes('?') ? '&' : '?';
+      targetUrl = originalUrl + joiner + 'sk=followers';
+    }
   } else {
-    // Tài khoản cá nhân dạng /username -> thêm /following
-    if (originalUrl.endsWith("/")) originalUrl = originalUrl.slice(0, -1);
-    targetUrl = originalUrl + "/following";
+    if (!/\/(following|followers)(\/?)$/i.test(originalUrl)) {
+      if (originalUrl.endsWith("/")) originalUrl = originalUrl.slice(0, -1);
+      targetUrl = originalUrl + '/followers';
+    }
   }
   
-  chrome.tabs.update(targetTabId, { url: targetUrl }, (tab) => {
+  chrome.tabs.update(targetTabId, { url: 'about:blank' }, () => {
     setTimeout(() => {
-      chrome.tabs.sendMessage(targetTabId, { action: 'START_AUTO_MODE' }, (res) => {
-         if (chrome.runtime.lastError) {
-             console.log("Tab không phản hồi, bỏ qua trang...");
-             setTimeout(() => {
-                 handleAutoFinished([]); 
-             }, 2000);
-         }
+      chrome.tabs.update(targetTabId, { url: targetUrl }, (tab) => {
+        setTimeout(() => {
+          chrome.tabs.sendMessage(targetTabId, { action: 'START_AUTO_MODE' }, (res) => {
+             if (chrome.runtime.lastError) {
+                 console.log("Tab không phản hồi, bỏ qua trang...");
+                 setTimeout(() => {
+                     handleAutoFinished([]); 
+                 }, 1000);
+             }
+          });
+        }, 1800);
       });
-    }, 5500);
+    }, 500);
   });
 }
 
-function exportAllData(isPartial = false) {
-  if (targetTabId) {
+function exportAllData(isPartial = false, fallbackTabId = null) {
+  const tId = fallbackTabId || targetTabId;
+  if (tId) {
     // Tránh gửi chuỗi JSON hàng chục MB qua sendMessage (Chrome sẽ block nếu quá 64MB)
     // Chỉ gửi lệnh, Content Script sẽ tự đọc từ Local Storage
-    chrome.tabs.sendMessage(targetTabId, { action: 'FORCE_DOWNLOAD_FROM_STORAGE', isPartial: isPartial }).catch(()=>{});
+    chrome.tabs.sendMessage(tId, { action: 'FORCE_DOWNLOAD_FROM_STORAGE', isPartial: isPartial }).catch(()=>{});
   }
 }

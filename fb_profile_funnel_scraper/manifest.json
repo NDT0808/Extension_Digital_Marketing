@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "FB Profile Funnel Scraper",
+  "version": "1.0",
+  "description": "Cào phễu 3 bước: Lấy Avatar, Cover, Quét bài đăng, Chấm điểm hoạt động cho Breeders.",
+  "permissions": [
+    "activeTab",
+    "<all_urls>",
+    "storage",
+    "unlimitedStorage",
+    "scripting",
+    "downloads",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*.facebook.com/*",
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.facebook.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
