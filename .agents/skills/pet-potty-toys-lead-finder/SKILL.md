@@ -21,6 +21,14 @@ Hệ thống / Cửa hàng đang kinh doanh và tìm kiếm đối tác, khách 
    * *Từ khóa nhận diện:* `chew toy`, `dog toy`, `puppy toy`, `plush toy`, `rope toy`, `squeaky toy`, `interactive toy`, `teething`, `kong`, `nylabone`, `snuggle puppy`.
    * *LƯU Ý QUAN TRỌNG:* Loại trừ các từ chỉ giống chó như `Toy Poodle`, `Toy Breed`, `Toy Australian Shepherd` (đây là tên giống chó, KHÔNG PHẢI đồ chơi).
 
+### 1.1. Phạm vi Địa lý Chiến lược: 100% Tập trung Thị trường Mỹ (US Target Market)
+* **Thị trường Trọng tâm Giai đoạn 1 (Current Primary Focus):**
+  * Toàn bộ chiến dịch tiếp thị, hạ tầng kho vận FBA Amazon, hệ thống CRM và đội ngũ Sales hiện tại **tập trung đánh chiếm 100% thị phần tại Hoa Kỳ (United States / USA)**.
+  * Mọi khách hàng tiềm năng đưa vào bảng ưu tiên (Priority List), tính điểm Hot Leads và gửi cho đội Sales liên lạc telesale/email **bắt buộc phải thuộc thị trường Mỹ** (Phone định dạng Bắc Mỹ `+1`, 50 tiểu bang Hoa Kỳ, mã bưu chính Zip Code US 5 chữ số).
+* **Kế hoạch Mở rộng Tương lai (Future Expansion):**
+  * Các thị trường quốc tế (Canada, Vương quốc Anh, Úc, Châu Âu...) sẽ được kích hoạt mở rộng sau khi công ty hoàn thành mục tiêu chiếm lĩnh thị trường nội địa Mỹ.
+  * Trong giai đoạn này, nếu phát hiện các đối tác ngoài nước Mỹ, hệ thống tự động gắn cờ `International / Future Expansion` để lưu trữ dữ liệu phễu dự phòng, **tuyệt đối không chuyển sang đội Sales telesale trực diện**.
+
 ---
 
 ## 2. Tiêu chí Thu thập & Điểm Chuẩn Hồ sơ Khách hàng (Từ `marketing_parameter.html`)
@@ -176,3 +184,4 @@ Hệ thống RAG và phân loại phải loại bỏ các tổ chức phi khách
 4. **Luôn xuất ra các cột rõ ràng:** Tên, URL, Website, Ngày hoạt động gần nhất (`lastActiveDays`), Điểm số chuẩn (`Lead Score`), Phân hạng (`Tier A/B/C/D`), Kênh Amazon (`Amazon Link` & `Amazon Status`), và Phân loại nhu cầu sản phẩm (Cỏ nhân tạo / Nhà vệ sinh / Đồ chơi).
 5. **Hành động Sales Cụ thể:** Chỉ ra rõ trong danh sách khách nào là **Hot Lead (Hạng A/S, điểm ≥ 61)** để Sales xử lý ngay lập tức theo kịch bản Take-Home Kit V2/V3.
 6. **Quy tắc Vận Hành RAG:** Hệ thống RAG khi truy vấn phải trích xuất trực tiếp từ danh sách thông tin người dùng đã xác minh (Ground Truth), ưu tiên lọc các đối tác có gian hàng Amazon bán cả 2 dòng sản phẩm mục tiêu (Đồ chơi + Cỏ/Potty) để cung cấp báo giá sỉ độc quyền.
+7. **Quy tắc Phạm vi Địa lý (100% Thị trường Mỹ - USA Only):** Toàn bộ truy vấn RAG, lọc leads cho Sales, và phân tích chiến dịch chỉ quét khách hàng nội địa Mỹ (`Country == 'United States'`). Các thị trường quốc tế sẽ được xếp vào nhánh dữ liệu mở rộng sau này, không phân bổ ngân sách tiếp cận trong giai đoạn này.

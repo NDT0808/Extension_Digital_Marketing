@@ -35,6 +35,7 @@ class PriorityListRAG:
                 'row_no': row.get('NO', idx + 1),
                 'master_id': row.get('Master ID', ''),
                 'name': name,
+                'country': 'United States',
                 'state': state,
                 'city': city,
                 'website': web,
@@ -51,14 +52,14 @@ class PriorityListRAG:
             }
             
             # Text chunk for semantic vector search
-            text_chunk = f"{name} {state} {city} {web} {amz_class} {tier} score:{score} {'has amazon seller storefront' if has_amz else 'no amazon'}"
+            text_chunk = f"{name} United States USA {state} {city} {web} {amz_class} {tier} score:{score} {'has amazon seller storefront' if has_amz else 'no amazon'}"
             self.documents.append(doc)
             self.doc_texts.append(text_chunk)
             
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 2), lowercase=True)
         self.tfidf_matrix = self.vectorizer.fit_transform(self.doc_texts)
         
-    def query(self, query_text, top_k=10, only_amazon=False, min_score=None):
+    def query(self, query_text, top_k=10, only_amazon=False, min_score=None, only_us=True):
         q_vec = self.vectorizer.transform([query_text])
         sims = cosine_similarity(q_vec, self.tfidf_matrix).flatten()
         ranked = np.argsort(-sims)
@@ -66,6 +67,8 @@ class PriorityListRAG:
         results = []
         for idx in ranked:
             doc = self.documents[idx]
+            if only_us and doc.get('country') != 'United States':
+                continue
             if only_amazon and not doc['has_amazon']:
                 continue
             if min_score and doc['lead_score'] < min_score:
