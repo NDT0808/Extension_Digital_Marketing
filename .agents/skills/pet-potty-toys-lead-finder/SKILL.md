@@ -185,3 +185,27 @@ Hệ thống RAG và phân loại phải loại bỏ các tổ chức phi khách
 5. **Hành động Sales Cụ thể:** Chỉ ra rõ trong danh sách khách nào là **Hot Lead (Hạng A/S, điểm ≥ 61)** để Sales xử lý ngay lập tức theo kịch bản Take-Home Kit V2/V3.
 6. **Quy tắc Vận Hành RAG:** Hệ thống RAG khi truy vấn phải trích xuất trực tiếp từ danh sách thông tin người dùng đã xác minh (Ground Truth), ưu tiên lọc các đối tác có gian hàng Amazon bán cả 2 dòng sản phẩm mục tiêu (Đồ chơi + Cỏ/Potty) để cung cấp báo giá sỉ độc quyền.
 7. **Quy tắc Phạm vi Địa lý (100% Thị trường Mỹ - USA Only):** Toàn bộ truy vấn RAG, lọc leads cho Sales, và phân tích chiến dịch chỉ quét khách hàng nội địa Mỹ (`Country == 'United States'`). Các thị trường quốc tế sẽ được xếp vào nhánh dữ liệu mở rộng sau này, không phân bổ ngân sách tiếp cận trong giai đoạn này.
+
+---
+
+## 8. Mô hình Tiếp thị Ngữ cảnh theo Thời tiết & Khí hậu (Weather Contextual Marketing Engine)
+
+### 8.1. Cơ chế Kỹ thuật Lấy Dữ liệu Thời tiết từ Địa chỉ & IP
+Dựa vào dữ liệu hồ sơ khách hàng đã có (`Country: US`, `Bang / State`, `Thành Phố / City`, `Mã Zip`), hệ thống hoàn toàn có thể tự động truy vấn thời tiết thời gian thực thông qua API OpenWeatherMap (đã tích hợp trong `天气预报.html`, API Key: `2e519601af416c660ebaa2323bee4f54`):
+* **Truy vấn theo Zip Code (Độ chính xác cao nhất tại Mỹ):** `https://api.openweathermap.org/data/2.5/weather?zip={zip},US&units=imperial&appid={API_KEY}`
+* **Truy vấn theo Thành phố & Bang:** `https://api.openweathermap.org/data/2.5/weather?q={city},{state},US&units=imperial&appid={API_KEY}`
+* **Truy vấn qua IP Khách truy cập Web (Frontend Contextual Trigger):** Đọc địa chỉ IP người dùng -> Định vị Geolocation (Tọa độ hoặc Zip) -> Gọi API OpenWeatherMap để tự động đổi banner quảng cáo, pop-up và bảng giá theo thời tiết cục bộ.
+
+### 8.2. 3 Kịch bản Kích hoạt Bán hàng theo Ngữ cảnh Thời tiết (Contextual Triggers)
+1. **Trigger 1: Nhiệt độ Khắc nghiệt & Mưa Bão Tuyết (Bad Weather / Extreme Heat / Freezing) $\rightarrow$ Nhu cầu Thảm Cỏ & Khay Vệ sinh Tăng Vọt:**
+   * *Điều kiện kích hoạt:* Mưa dầm dề (`Rain / Drizzle`), Tuyết rơi (`Snow`), Băng giá (`Temp < 40°F / 4°C`), hoặc Nắng nóng gay gắt mặt đường bê tông bỏng rát (`Temp > 90°F / 32°C`).
+   * *Hành vi người nuôi:* Chủ ngại dắt chó ra đường, cún con dễ bị cảm lạnh hoặc sốc nhiệt, chân ướt vấy bẩn sàn nhà.
+   * *Kịch bản Bán hàng (Sales / Ads Angle):* Đẩy mạnh **Thảm cỏ nhân tạo thoát nước (Pet Turf Pad)** và **Khay vệ sinh trong nhà (Indoor Potty Tray)**.
+   * *Thông điệp Telesale/Email:* *"Trời mưa dầm dề / nắng gắt mặt đường nóng bỏng, bảo vệ cún cưng với giải pháp đi vệ sinh sạch sẽ ngay tại nhà!"*
+2. **Trigger 2: Chó bị "Cuồng Chân" do Nhốt Trong Nhà Lâu Ngày $\rightarrow$ Kích hoạt Đồ Chơi Xoa Dịu & Nhai Gặm:**
+   * *Điều kiện kích hoạt:* Thời tiết xấu kéo dài $\ge 2$ ngày liên tiếp.
+   * *Hành vi người nuôi:* Cún không được ra ngoài chạy nhảy giải tỏa năng lượng, dễ bị stress, sủa nhiều và cắn phá bàn ghế, giày dép.
+   * *Kịch bản Bán hàng:* Đẩy mạnh **Đồ chơi nhai gặm (Chew Toys)**, **Đồ chơi xoa dịu nhịp tim mẹ (Snuggle Puppy)**, **Thảm đánh hơi giải phóng năng lượng (Snuffle Mat)**.
+   * *Thông điệp:* *"Những ngày mưa lạnh không thể ra ngoài, hãy để bé cún xả năng lượng và bớt căng thẳng với combo đồ chơi gặm thông minh!"*
+3. **Trigger 3: Định giá Động (Dynamic Pricing & Emergency Take-Home Kit Bundling):**
+   * *Cơ chế:* Khi khu vực có cảnh báo bão/tuyết kéo dài (nhu cầu cấp bách, "không thể chần chừ"), hệ thống ưu tiên chào gói combo trọn gói **Take-Home Starter Kit V3** với giá trị đơn hàng AOV cao hơn 20-30%. Khách hàng sẵn sàng chốt đơn ngay mà không so đo chiết khấu nhỏ lẻ vì nhu cầu giải quyết chỗ đi vệ sinh và xoa dịu cún là tức thì.
