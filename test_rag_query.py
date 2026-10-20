@@ -3,46 +3,36 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
-excel_path = r"c:\Users\ASUS\Downloads\Marketing_Pet&Grass\Datasets\Thong_Ke_Leads_FB_PublishTime_2026.xlsx"
-df = pd.read_excel(excel_path, sheet_name="Tier_S_A_Hot_Leads_US")
-print(f"[*] Nạp RAG với {len(df)} Hot Leads B2B US từ file thống kê chuẩn...")
+master_excel = r"c:\Users\ASUS\Downloads\Marketing_Pet&Grass\Master_Standard_Leads_PetGrass_Potty_Toys_2026.xlsx"
+df = pd.read_excel(master_excel, sheet_name="US_Hot_Leads_Cap_A_61d")
+print(f"[*] Nạp RAG với {len(df)} Hot Leads Cấp A từ Master File...")
 
-doc_texts = []
-docs = []
-for idx, r in df.iterrows():
-    name = str(r["Tên"])
-    icp = str(r["Phân Loại ICP"])
-    details = str(r["Chi Tiết Phân Loại"])
-    prod = str(r["Sản Phẩm Mục Tiêu"])
-    city = str(r["Thành Phố"]) if pd.notna(r["Thành Phố"]) else ""
-    state = str(r["Bang / State"]) if pd.notna(r["Bang / State"]) else ""
-    score = r["Total_Score"]
-    tier = r["Phân Hạng (Tier)"]
-    phone = str(r["Điện Thoại"]) if pd.notna(r["Điện Thoại"]) else "N/A"
-    action = str(r["Hành Động Đội Sales"])
-    
-    text = f"{name} {icp} {details} {prod} {city} {state} {tier} {action}"
-    doc_texts.append(text)
-    docs.append({
-        "name": name, "icp": icp, "score": score, "tier": tier,
-        "prod": prod, "phone": phone, "action": action, "location": f"{city}, {state}".strip(", ")
-    })
+texts = []
+for _, r in df.iterrows():
+    name = str(r["Breeder_Name"])
+    breeds = str(r["Breeds_Identified"])
+    state = str(r["State"]) if pd.notna(r["State"]) else ""
+    city = str(r["City"]) if pd.notna(r["City"]) else ""
+    prod = str(r["Target_Products"])
+    act = str(r["Sales_Action"])
+    text = f"{name} {breeds} {city} {state} {prod} {act}"
+    texts.append(text)
 
 vec = TfidfVectorizer(ngram_range=(1, 2), lowercase=True)
-tfidf = vec.fit_transform(doc_texts)
+matrix = vec.fit_transform(texts)
 
 queries = [
-    "French bulldog breeder take home kit puppy",
-    "Golden retriever grass pee pad potty training",
-    "Dog training academy artificial turf lawn field"
+    "Frenchies and Bernedoodle puppies take home kit Seattle",
+    "Dog training turf grass pee pad Florida",
+    "Rottweiler kennel puppy starter kit"
 ]
 
 for q in queries:
-    print(f"\n[RAG QUERY]: '{q}'")
-    q_v = vec.transform([q])
-    sims = cosine_similarity(q_v, tfidf).flatten()
-    top_idx = np.argsort(-sims)[:3]
-    for i in top_idx:
-        d = docs[i]
-        sim = sims[i]
-        print(f"  -> ({sim:.2f}) [{d['score']}đ | {d['tier']}] {d['name']} | Phone: {d['phone']} | {d['prod'][:45]}...")
+    print(f"\n[RAG SEARCH]: '{q}'")
+    qv = vec.transform([q])
+    sims = cosine_similarity(qv, matrix).flatten()
+    top_i = np.argsort(-sims)[:3]
+    for i in top_i:
+        r = df.iloc[i]
+        phone = r["Phone"] if pd.notna(r["Phone"]) else "Chưa có SĐT"
+        print(f"  -> ({sims[i]:.2f}) [{r['Total_Lead_Score']}đ | {r['Tier_Rank'][:6]}] {r['Breeder_Name']} ({r['State']}) | Phone: {phone} | Kit: {str(r['Target_Products'])[:40]}...")

@@ -10,10 +10,14 @@
     "unlimitedStorage",
     "scripting",
     "downloads",
-    "tabs"
+    "tabs",
+    "clipboardRead",
+    "clipboardWrite"
   ],
   "host_permissions": [
     "*://*.facebook.com/*",
+    "*://*.gooddog.com/*",
+    "<all_urls>",
     "http://127.0.0.1:8000/*",
     "http://localhost:8000/*"
   ],
@@ -28,6 +32,16 @@
       "matches": ["*://*.facebook.com/*"],
       "js": ["content.js"],
       "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "nlp_extractor.onnx",
+        "vocab.json",
+        "exceljs.min.js"
+      ],
+      "matches": ["*://*.facebook.com/*", "<all_urls>"]
     }
   ]
 }

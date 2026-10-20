@@ -1,0 +1,94 @@
+{
+  "phases": [
+    {
+      "id": "p1",
+      "phaseName": "第一阶段 - 企业级CRM高优线索数据清洗、标准化与交付 (priority-data-8-20261013.xlsx 对齐)",
+      "timeRange": "下午 (13:00 - 16:00)",
+      "role": "1* 高优潜客数据标准化与整合交付 (CRM数据清洗与规范化)",
+      "tasks": [
+        {
+          "id": "t1-1",
+          "text": "1.1* 严格对照领导模板 (priority-data-8-20261013.xlsx) 规范化清洗 37 项企业级数据字段：深度整合 Master Leads 核心数据库与 Good Dog (Good Breeder Center) 粉丝采集池，统一美国电话格式（规范化为 E.164 纯数字格式 1XXXXXXXXXX，剔除特殊字符），核验有效邮箱地址状态（valid），将负责人拆分为名字、姓氏与全名，规范化州（State）、城市（City）、详细地址，并强制将 Facebook 数字 FB_ID 写入 CRM NO. 唯一键，实现底层数据绝对去重。"
+        },
+        {
+          "id": "t1-2",
+          "text": "1.2* 客户等级分级评估、计算线索评分 (Lead Score 0-100) 并深度配置业务 remark 备注字段：依据综合线索评分体系（0-100分）及交互时效性（Recency Tier）划分客户等级（Tier S 钻石级、Tier A 黄金级、Tier B+/B 白银级）；将 AI 视觉识别结果、全美各州天气场景触发策略（Weather Trigger: 阴雨降温主推室内狗厕所+速干草坪，烈日高温主推庭院降温草坪，室内犬主推耐咬玩具 Chew Toys）以及 Take-Home Starter Kit 推荐方案精准写入 remark 字段，赋能销售团队精准转化。"
+        },
+        {
+          "id": "t1-3",
+          "text": "1.3* 打包输出标准高优线索交付报表 (GoodDog_Priority_Leads_Batches_2026-10-16.xlsx)：按每组 20 个高优 VIP 客户拆分独立 Sheet（Batch_01_Top20, Batch_02_Top20...），完成冻结首行表头 (Freeze Panes)、开启自动筛选 (Auto-filter)、设置网格线及自适应列宽与高阶视觉配准，交付领导审阅与销售跟进。"
+        }
+      ],
+      "metricName": "企业级CRM数据标准化与交付",
+      "calculationMethod": "100% 对齐领导 37 个字段标准模板，完成数据清洗与高质量 Excel 交付",
+      "maxScore": 10,
+      "startTime": 13,
+      "endTime": 16,
+      "color": "bg-blue-500"
+    },
+    {
+      "id": "p2",
+      "phaseName": "第二阶段 - Transformer 多模态视觉模型微调（头像识别犬类）与用户信息智能抽取 (Transformer微调与实体提取)",
+      "timeRange": "傍晚 (16:00 - 19:00)",
+      "role": "2* Transformer模型微调与用户信息智能抽取 (多模态AI与实体识别)",
+      "tasks": [
+        {
+          "id": "t2-1",
+          "text": "2.1* 优化并微调 (Fine-tune) 基于 Transformer 的犬类头像视觉识别模型：将原有 YOLOv8/dog-model.onnx 架构升级迁移至多模态视觉 Transformer（如 Qwen2-VL / ViT 架构），基于 Facebook 用户真实头像数据集进行迁移学习微调，精准剔除卡通插画、表情包及非犬类干扰，实现对核心热门犬种（法斗、吉娃娃、泰迪/贵宾、德国牧羊犬等）及犬只年龄段（幼犬 Puppy vs 成年犬 Adult Dog）的高精度判别，目标准确率稳定达到 92% 以上。"
+        },
+        {
+          "id": "t2-2",
+          "text": "2.2* 构建基于 Transformer 的用户信息智能实体抽取管线 (NER / Information Extraction)：利用大语言/多模态模型强大的深层语义理解能力，自动解析用户简介 (Bio/Intro)、官网页面及近期发帖文本，结构化抽取核心实体：犬舍/繁育场名称 (Kennel Name)、负责人姓名 (Owner Name)、直连电话、业务邮箱、所在城市/州及幼犬在售状态与报价信息。"
+        },
+        {
+          "id": "t2-3",
+          "text": "2.3* 推理性能加速优化与抓取系统集成：对微调模型进行 INT8/FP16 混合精度量化，适配本地 RTX GPU 硬件加速推理（CUDA / TensorRT / ONNX Runtime），配置批量化 (Batching) 推理管线，将单主页综合解析耗时降至 1.5 秒以内，确保抓取与 AI 分析全链路无阻流运行。"
+        }
+      ],
+      "metricName": "Transformer模型微调与信息抽取",
+      "calculationMethod": "完成 Transformer 头像识别微调与用户信息自动抽取管线搭建，单体解析耗时<1.5s，识别准确率>92%",
+      "maxScore": 10,
+      "startTime": 16,
+      "endTime": 19,
+      "color": "bg-indigo-600"
+    },
+    {
+      "id": "p3",
+      "phaseName": "第三阶段 - 全量数据深度清洗复核与多维度可视化数据看板大屏发布 (全量数据复核与可视化看板)",
+      "timeRange": "晚间 (19:00 - 22:00)",
+      "role": "3* 全量数据深度复核与可视化大屏构建 (数据复核与交付看板)",
+      "tasks": [
+        {
+          "id": "t3-1",
+          "text": "3.1* 全量潜客数据深度清洗与目标人群 (ICP) 精准切片：实施多阶漏斗清洗机制，全面剔除无效休眠号、垃圾账号及非目标区域线索；精准细分目标客户画像：商业繁育犬舍 (Commercial Breeder)、K9 专业训犬机构 (K9 Training)、宠物救助组织 (Pet Rescue) 以及高潜个人犬主 (B2C Dog Owners)。"
+        },
+        {
+          "id": "t3-2",
+          "text": "3.2* 升级发布交互式多维数据可视化大屏 (Visual Analytics Dashboard)：构建并更新双语版动态交互图表系统，包含四大核心模块：① 潜客转化漏斗图 (Conversion Funnel)、② 全美各州地理分布热力图 (Geographic Heatmap: 聚焦德州、加州、佛州、俄亥俄州等重点犬舍集群)、③ 天气矩阵与三大产品线匹配分布图 (Pet Grass 宠物草坪 / Pet Potty 宠物狗厕所 / Pet Toys 宠物玩具)、④ AI 视觉识别精度与犬种分布统计图。"
+        },
+        {
+          "id": "t3-3",
+          "text": "3.3* 整合打包完整交付成果呈报管理层：生成高交互性 HTML 汇报仪表盘 (Facebook潜客营销与RAG分析报告_2026.html)，导出核心 KPI 统计摘要与高优线索数据集，形成端到端闭环，全面赋能后续数字营销与精准销售触达。"
+        }
+      ],
+      "metricName": "全量数据复核与可视化大屏交付",
+      "calculationMethod": "交付 100% 清洗达标的全量高优数据池与双语交互式可视化大屏报表",
+      "maxScore": 10,
+      "startTime": 19,
+      "endTime": 22,
+      "color": "bg-emerald-500"
+    }
+  ],
+  "dayState": {
+    "completedTasks": [],
+    "scores": {
+      "p1": 0.0,
+      "p2": 0.0,
+      "p3": 0.0
+    },
+    "executorName": "Trong",
+    "importedFileName": "Trong_2026_10_15.json"
+  },
+  "version": "2.0",
+  "timestamp": "2026-10-16T13:00:00.000Z"
+}

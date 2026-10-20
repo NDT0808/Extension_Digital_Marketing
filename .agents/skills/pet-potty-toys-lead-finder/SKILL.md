@@ -38,8 +38,8 @@ Hệ thống / Cửa hàng đang kinh doanh và tìm kiếm đối tác, khách 
 > * **Nguồn chuẩn mực số 1 (Hồ sơ Tĩnh - Baseline Ground Truth):** Được tính trực tiếp trên **Danh sách trích xuất thông tin người dùng** (`List_Info_User.xlsx` / `priority_list_2026-10-06_v2.xlsx`) dựa vào bộ quy chuẩn 13 trường tại Mục 02 và thang điểm Lead Score tại Mục 04 của `Datasets/marketing_parameter.html`. Đây là căn cứ quyết định phân cấp A/B/C/D và tiềm năng mua sỉ dài hạn.
 > * **Nguồn bổ trợ số 2 (Hành vi Động - Dynamic Boost):** File `List_Action_user.xlsx` ghi nhận các sự kiện tương tác số (Click, Comment Reels, Web Pixel), chỉ dùng để **cộng điểm thưởng tương tác nóng (Hot Boost) và tính hệ số suy giảm thời gian (Time Decay)**, không thể dùng độc lập để chấm điểm hồ sơ vì thiếu các trường dữ liệu tĩnh nền tảng (Website, Puppy page, Application, Review, Giống chó).
 
-### 2.1. 13 Trường Dữ liệu Thu thập Quan trọng (Data Structure)
-Mỗi khi trích xuất hoặc hoàn thiện hồ sơ đối tác/breeder, ưu tiên bám sát 13 trường chuẩn:
+### 2.1. 15 Trường Dữ liệu Thu thập Quan trọng (Updated Data Structure for Sales & Accounting)
+Ngoài 13 trường nền tảng từ `marketing_parameter.html`, mọi danh sách xuất ra cho Bộ phận Sales và Bộ phận Kế toán bắt buộc phải bổ sung **Trường số 14 và 15** để định danh người ra quyết định mua hàng (Decision Maker):
 1. **Breeder Name** (Tên trại chó / người nhân giống) - ★★★★★
 2. **Website** (Website chính thức) - ★★★★★
 3. **Email** (Email kinh doanh/giao dịch) - ★★★★★
@@ -53,6 +53,14 @@ Mỗi khi trích xuất hoặc hoàn thiện hồ sơ đối tác/breeder, ưu t
 11. **Reviews** (Số lượng & điểm đánh giá Google/Facebook) - ★★★☆☆
 12. **Online Store** (Có cửa hàng bán phụ kiện/đồ dùng online hoặc Amazon) - ★★★★☆
 13. **Current Kit** (Hiện tại có cung cấp gói quà Take-Home Kit cho khách nhận cún không) - ★★★★★
+14. **Owner_Representative (Chủ sở hữu / Người đại diện pháp lý - Decision Maker)** - ★★★★★
+    * *Mục đích cho Sales:* Cá nhân hóa lời chào mở đầu ("Hi Javin / Hi Tanya, ...") giúp tăng gấp 2.5 lần tỷ lệ bắt máy và phản hồi email so với gửi chung chung ("Dear Breeder").
+    * *Mục đích cho Bộ phận Kế toán:* Điền chính xác tên Người nhận vào Báo giá thương mại (`Attention: [Owner_Representative]` trên Commercial Quote / BOM), xác minh chủ thẻ/tài khoản thanh toán và lập phiếu xuất kho `Sample Kit`.
+15. **Owner_Confidence & Evidence_Source (Cấp độ Xác thực & Nguồn Bằng chứng Chủ sở hữu)** - ★★★★☆
+    * Phân định theo thứ bậc ưu tiên 3 tầng tuyệt đối (TUYỆT ĐỐI KHÔNG DÙNG placeholder chung chung như `Breeder Owner / Manager` hoặc `Kennel Owner`):
+      - `Tier 1 - High (Website About/Home/Contact/Good Dog Verified)`: Mở tab trình duyệt trực quan quét sâu trang web chính thức, Schema.org, Header `Meet [Name]`, Image Alt text hoặc hồ sơ Good Dog (vd: `Amanda Bexley`, `Lisa Z.`).
+      - `Tier 2 - Medium-High (Email Prefix Name Match)`: Tự động phân tích tiền tố của Gmail trước dấu `@` khi web không ghi tên (vd: `amandabexleyab@gmail.com` $\rightarrow$ `Amanda Bexley`, `roleezyorkies@gmail.com` $\rightarrow$ `Roleez Yorkies`).
+      - `Tier 3 - Medium (Facebook Page Name Fallback)`: Khi không có email hoặc email chung chung (`contact@`, `info@`), lấy thẳng tên Fanpage/Profile trên Facebook (`lead.name`).
 
 ### 2.2. Phân loại Cấp bậc Đối tác (A - B - C - D) & Hành động của Đội Sales (Mục 03)
 * **Cấp A (A级: Điểm $\ge$ 61 - Trọng điểm Sales / Ưu tiên Cao nhất):**
@@ -185,6 +193,7 @@ Hệ thống RAG và phân loại phải loại bỏ các tổ chức phi khách
 5. **Hành động Sales Cụ thể:** Chỉ ra rõ trong danh sách khách nào là **Hot Lead (Hạng A/S, điểm ≥ 61)** để Sales xử lý ngay lập tức theo kịch bản Take-Home Kit V2/V3.
 6. **Quy tắc Vận Hành RAG:** Hệ thống RAG khi truy vấn phải trích xuất trực tiếp từ danh sách thông tin người dùng đã xác minh (Ground Truth), ưu tiên lọc các đối tác có gian hàng Amazon bán cả 2 dòng sản phẩm mục tiêu (Đồ chơi + Cỏ/Potty) để cung cấp báo giá sỉ độc quyền.
 7. **Quy tắc Phạm vi Địa lý (100% Thị trường Mỹ - USA Only):** Toàn bộ truy vấn RAG, lọc leads cho Sales, và phân tích chiến dịch chỉ quét khách hàng nội địa Mỹ (`Country == 'United States'`). Các thị trường quốc tế sẽ được xếp vào nhánh dữ liệu mở rộng sau này, không phân bổ ngân sách tiếp cận trong giai đoạn này.
+8. **Quy tắc Bàn giao Dữ liệu Định danh cho Sales & Kế toán:** Mọi file Excel và báo cáo CRM bàn giao cho Bộ phận Sales telesale hoặc Bộ phận Kế toán làm báo giá/xuất kho bắt buộc phải có đầy đủ 2 trường: `Owner_Representative` (Tên Chủ sở hữu / Người đại diện pháp lý) và `Owner_Confidence` (Mức độ xác thực) để điền chính xác `Attention: [Owner_Representative]` trên Commercial Quote / BOM và gọi điện thoại trực tiếp người ra quyết định (Decision Maker).
 
 ---
 
@@ -209,3 +218,170 @@ Dựa vào dữ liệu hồ sơ khách hàng đã có (`Country: US`, `Bang / St
    * *Thông điệp:* *"Những ngày mưa lạnh không thể ra ngoài, hãy để bé cún xả năng lượng và bớt căng thẳng với combo đồ chơi gặm thông minh!"*
 3. **Trigger 3: Định giá Động (Dynamic Pricing & Emergency Take-Home Kit Bundling):**
    * *Cơ chế:* Khi khu vực có cảnh báo bão/tuyết kéo dài (nhu cầu cấp bách, "không thể chần chừ"), hệ thống ưu tiên chào gói combo trọn gói **Take-Home Starter Kit V3** với giá trị đơn hàng AOV cao hơn 20-30%. Khách hàng sẵn sàng chốt đơn ngay mà không so đo chiết khấu nhỏ lẻ vì nhu cầu giải quyết chỗ đi vệ sinh và xoa dịu cún là tức thì.
+
+---
+
+## 9. Quy chuẩn Bộ lọc Chống Nhiễu & Flow 5 Tầng Truy vết Chủ Sở Hữu (5-Stage Waterfall Discovery Flow)
+
+### 9.1. Tầm quan trọng Chiến lược trong B2B Sales & Accounting
+Trong ngành nhân giống thú cưng tại Mỹ (Pet Breeder Industry), đa số các trại chó là mô hình kinh doanh gia đình (Family-owned / Boutique Kennels) hoặc trang trại tư nhân có tính gắn kết cá nhân rất cao:
+* **Tăng tỷ lệ mở Email lên 300% & Bắt máy Telesale gấp 2.5 lần:** Khi gửi email với tiêu đề cá nhân hóa (`"Hi Sarah, special puppy kit proposal for Sunset Retrievers"`) hoặc gọi điện xưng danh (`"May I speak with Jason please?"`), tỷ lệ phản hồi tăng vọt so với gửi chung chung (`"Dear Breeder / Dear Kennel Owner"`).
+* **Minh bạch Báo giá Kế toán & Xuất kho BOM:** Bộ phận Kế toán điền chính xác tên người nhận vào mục `Attention: [Owner_Representative]` trên báo giá chính thức (BOM), xác minh người thanh toán và lập phiếu xuất mẫu thử `Puppy Kit`.
+
+### 9.2. Quy chuẩn Bộ lọc Chống Nhiễu Tên Chủ Sở Hữu (Owner Name Anti-Noise Guardrails)
+Khi dùng AI, Web Crawler và Regex quét tên `Owner_Representative` từ Website, Email và Mạng xã hội, hệ thống **TUYỆT ĐỐI LOẠI BỎ** các từ khóa sau:
+1. **Từ khóa điều hướng & Tiêu đề Web (UI/Menu Stopwords):** `Home`, `About`, `Contact`, `Menu`, `Welcome`, `New`, `What New`, `All`, `Style`, `Shopping`, `Business`, `Services`, `Gallery`, `Testimonials`, `FAQ`, `Blog`, `Privacy`, `Terms`, `Copyright`, `All Rights Reserved`.
+2. **Thuật ngữ chuyên ngành thú cưng & Dịch vụ:** `Guardian`, `Planned Litters`, `Available Puppies`, `Microchip Clinics`, `Stray Assistance`, `Grooming School`, `Puppy Culture`, `Health Guarantee`, `Adoption`, `Breeder`, `Kennel`, `Ranch`, `Farm`, `Puppies`, `Doodles`, `Frenchies`, `Retrievers`, `Bulldogs`, `Shepherds`, `Goat`, `Ice`, `Alumni`, `Serious`, `Lifelong`, `Kind`, `Not`, `Advice From`, `Highly Experienced`.
+3. **Tên nền tảng & Đơn vị thiết kế Web (Footer Agency Names):** `Amazon`, `Facebook`, `Instagram`, `GoDaddy`, `Wix`, `Squarespace`, `WordPress`, `Shopify`, `Unleashed Designs`, `Inside Media`.
+4. **Hộp thư dùng chung (Role-based Emails):** `info@`, `sales@`, `contact@`, `admin@`, `support@`, `hello@`, `office@`, `inquire@`, `intake@`, `adopt@`, `puppies@`, `breeder@`, `team@`.
+
+### 9.3. Kiến trúc Pipeline 5 Tầng Truy vết Chủ Sở Hữu (Waterfall Enrichment Flow)
+
+```mermaid
+graph TD
+    A["[Danh sách Khách hàng B2B Mỹ: Website, Email, Phone, FB, Tên Trại]"] --> B["TẦNG 1: Giải mã Nội bộ Sẵn có (Instant / Zero-Cost)"]
+    B --> B1["1A. Tên gắn trong Tên Trại: Rocklin Farms - Andrea Schnelten, Maggie's..."]
+    B --> B2["1B. Tiền tố Email Cá nhân + US Census Top 3.000 Names: emmawakelin@ -> Emma Wakelin"]
+    B --> B3["1C. Mã Affiliate Tag/Author Link Amazon: tag=lorettaduncan-20 -> Loretta Duncan"]
+    B --> B4["1D. Bio Facebook / Instagram: I'm Angie Hancock..."]
+    
+    B --> C{Đã tìm thấy?}
+    C -- "Chưa" --> D["TẦNG 2: Quét Sâu Đa Trang Con Website (/about, /our-story, /meet-us, /contact)"]
+    D --> D1["Contextual Regex: Owned by [Name], Hi I'm [Name], We are [Name1] & [Name2]"]
+    D --> D2["Kiểm định 2 Lớp: Stopword Blacklist + US Census First Name Whitelist"]
+    
+    D --> E{Đã tìm thấy?}
+    E -- "Chưa" --> F["TẦNG 3: Quét Chính Sách, Hợp Đồng & Form Đăng Ký (/contract, /health-guarantee)"]
+    F --> F1["Bóc tách chữ ký hợp đồng bảo hành, người nhận thanh toán Zelle/Venmo"]
+    
+    F --> G{Đã tìm thấy?}
+    G -- "Chưa" --> H["TẦNG 4: Tra cứu Pháp nhân Tiểu Bang Mỹ (LLC/Inc) & AKC Marketplace"]
+    H --> H1["Quét Registered Agent / Managing Member theo State SOS & AKC Breeder Profile"]
+    
+    H --> I{Đã tìm thấy?}
+    I -- "Chưa" --> K["TẦNG 5: Gán Nhãn Chuẩn Hóa Bàn Giao Sales & Kế Toán (Fallback Role)"]
+    K --> K1["Gán Tier 4 - Role Fallback kèm kịch bản Telesale hỏi tên người phụ trách"]
+    C -- "Có" --> L["Gán nhãn Tier 1/2/3 & Xuất dữ liệu CRM/Excel"]
+    E -- "Có" --> L
+    G -- "Có" --> L
+    I -- "Có" --> L
+```
+
+### 9.4. Chi tiết Kỹ thuật Thuật toán ở Từng Tầng
+
+#### Tầng 1: Trích xuất Tức thì từ Dữ liệu Nội bộ (Email, Tên Trại, Link Amazon & Bio Facebook)
+* **Quy tắc 1A – Tên Chủ sở hữu nằm ngay trong Breeder Name:**
+  * Mẫu gạch ngang/dấu phẩy: `Rocklin Farms Pumi - Andrea Schnelten` $\rightarrow$ tách `Andrea Schnelten`; `Ad-Dirah Kennel Zoran Radisavljevic` $\rightarrow$ `Zoran Radisavljevic`.
+  * Mẫu sở hữu cách (`'s`): `Maggie's Happy Poodles` $\rightarrow$ `Maggie`; `Meggy's Shih Tzu Puppies` $\rightarrow$ `Meggy`; `Bella's House of Doodles LLC` $\rightarrow$ kết hợp trang About để lấy tên người thật `Angela` (tránh nhầm với tên chó đầu đàn).
+* **Quy tắc 1B – Giải mã Tiền tố Email Cá nhân (Bao gồm Custom Domain, Gmail, iCloud, Yahoo, AOL, Hotmail):**
+  * Loại bỏ 100% tiền tố chung (`info`, `sales`, `contact`, `support`, `hello`, `admin`, `office`, `puppies`, `breeder`, `intake`) và các tiền tố trùng với tên domain/trại.
+  * *Trường hợp 1 (first.last@ hoặc first_last@):* `melissa.treuman@bideawee.org` $\rightarrow$ `Melissa Treuman`; `jessica.rahja@yahoo.com` $\rightarrow$ `Jessica Rahja`.
+  * *Trường hợp 2 (firstname@customdomain.com):* `karen@autumnharvestdoodranch.com` $\rightarrow$ lấy `Karen` (sửa lỗi "Guardian"); `sheryl@sundanceretrievers.com` $\rightarrow$ `Sheryl` (sửa lỗi "Advice From"); `kim@prancingponyfarm.com` $\rightarrow$ `Kim` (sửa lỗi "Goat"); `349-3944tanya@nwfrenchies.com` $\rightarrow$ lọc bỏ số điện thoại, lấy `Tanya` (kết hợp Web About ra `Tanya Kharus`).
+  * *Trường hợp 3 (Ghép liền FirstName + LastName trên webmail):* Tách từ bằng Từ điển US Census Top 3.000 First Names:
+    - `emmawakelin@gmail.com` $\rightarrow$ tách `emma` (First Name) + `wakelin` (Last Name) $\rightarrow$ `Emma Wakelin`!
+    - `jeffreyweaver15@icloud.com` $\rightarrow$ bỏ số 15, tách `jeffrey` + `weaver` $\rightarrow$ `Jeffrey Weaver`!
+    - `autumnferrian@gmail.com` $\rightarrow$ tách `autumn` + `ferrian` $\rightarrow$ `Autumn Ferrian`!
+    - `jacquibrandt07@gmail.com` $\rightarrow$ bỏ số 07, tách `jacqui` + `brandt` $\rightarrow$ `Jacqui Brandt`!
+    - `theresabilava@gmail.com` $\rightarrow$ tách `theresa` + `bilava` $\rightarrow$ `Theresa Bilava`!
+* **Quy tắc 1C – Trích xuất từ Amazon Affiliate Tag & Author Link:**
+  * Quét tham số `tag=([a-z]+)-20` hoặc `keywords=([a-z]+\+[a-z]+)`:
+    - `...tag=lorettaduncan-20` (Little Puppies the Long Way) $\rightarrow$ `Loretta Duncan`.
+    - `...keywords=donna+stanley` (Endless Mt. Labradors) $\rightarrow$ `Donna Stanley`.
+    - `...Bernedoodles-Head-Guide-Sherry-Rupke-ebook...` (SwissRidge Kennels) $\rightarrow$ `Sherry Rupke`.
+
+#### Tầng 2 & 3: Quét Sâu Trang Con Website Kết Hợp Bộ Lọc Chống Nhiễu 2 Lớp
+* **Danh sách Đường dẫn Ưu tiên Quét (Subpage Priority Queue):**
+  * Nhóm 1 (Giới thiệu chủ trại): `/about`, `/about-us`, `/our-story`, `/meet-us`, `/meet-the-breeder`, `/our-family`, `/who-we-are`.
+  * Nhóm 2 (Liên hệ & Hợp đồng): `/contact`, `/contact-us`, `/health-guarantee`, `/contract`, `/faq`, và trang chủ `/`.
+* **Các Mẫu Ngữ Cảnh Ngôn Ngữ Tự Nhiên (Contextual Regex Patterns):**
+  * Mẫu sở hữu & điều hành: `(?:owned and operated by|founded by|breeders?\s+are|my name is|hi,?\s+i['’]m|hello,?\s+i['’]m|welcome!?\s+we are|family of)\s+([A-Z][a-z]{2,15}(?:\s+(?:and|&)\s+[A-Z][a-z]{2,15})?(?:\s+[A-Z][a-z]{2,18})?)`
+  * Mẫu chức danh: `([A-Z][a-z]{2,15}\s+[A-Z][a-z]{2,18})\s*[,\-–|]\s*(?:Owner|Founder|Head Breeder|Lead Trainer|Executive Director|President)`
+  * Mẫu liên hệ trực tiếp: `(?:call or text|please contact|reach out to|questions\?\s+ask)\s+([A-Z][a-z]{2,15}(?:\s+[A-Z][a-z]{2,18})?)\s+(?:at|@|\()`
+  * Mẫu thanh toán/hợp đồng: `(?:payable to|zelle to|venmo:?|breeder signature:?)\s+([A-Z][a-z]{2,15}\s+[A-Z][a-z]{2,18})`
+* **Cơ Chế Kiểm Định 2 Lớp (Two-Stage Validation Gate):**
+  * *Lớp 1 (Blacklist):* Loại bỏ ngay nếu cụm từ bắt được chứa bất kỳ từ nào trong danh sách STOPWORDS (như Microchip Clinics, Stray Assistance, Unleashed Designs, Planned Litters, Grooming School, Business, Shopping, Contact, Guardian, Advice From...).
+  * *Lớp 2 (US Census First Name Verification):* Từ đầu tiên (`First_Word`) bắt buộc phải nằm trong tập hợp Top 3.000 Tên gọi phổ biến tại Mỹ (US Census Given Names) (ví dụ: Javin, Tanya, Sarah, Tammy, Hillarie, Holly, Matt, Melissa, James, Denise, Gonzalo, Wendy, Brian, Kayla, Nicole, Hannah, Michelle, Julian, Sheryl, Amy, Margie, Trevor, Christy, Elizabeth, Wayne, Erin, Jessica, Katherine, Jodi, Julia, Paula, Kelly, Mandy, Angela, Peggy, Patrick, Kenan, Pierre, Jacqui, Manny, Tiffany, Britanie, Halle, Rebecca, Heather, Autumn, Dan, Robert, Chelsea, Darla, Charles, Linda, Miranda, Tabitha, Cassandra, Travis, Lisa, Andrew, Shari, Ryan, Scott, Joan, Chase, Darcy, Rachael, Karen, Theresa, Mary, Shannon, Daryl, Helen, Jennifer, Megan...). Cơ chế này chặn 100% các từ tiếng Anh thông thường bị viết hoa đầu câu!
+
+#### Tầng 4: Tra cứu Pháp Nhân Tiểu Bang & AKC Marketplace
+* Với các trại có đuôi `LLC`, `Inc`, `Corp` + tiểu bang xác định: Tra cứu trường `Registered Agent / Managing Member / Officer` qua hồ sơ OpenCorporates hoặc State SOS.
+* Tra cứu danh bạ AKC Marketplace Profile (`marketplace.akc.org`) nơi luôn công khai tên người phụ trách nhân giống chính.
+
+#### Tầng 5: Gán Nhãn Cấp Độ Tin Cậy & Kịch Bản Bàn Giao
+* `Tier 1 - High (Website About/Home/Contact Verified)`: Xác thực trực tiếp từ câu giới thiệu chủ trại trên Website chính thức hoặc Bio Fanpage.
+* `Tier 2 - Medium-High (Personal Email / Breeder Name / Amazon Tag Verified)`: Trích xuất từ Email cá nhân (`firstname.lastname@...`), tên trong tên trại (`Maggie's...`, `- Andrea Schnelten`), hoặc Amazon Affiliate Tag.
+* `Tier 3 - Medium (Registry / AKC / State SOS / WHOIS Verified)`: Xác thực từ hồ sơ đăng ký kinh doanh tiểu bang hoặc AKC Marketplace.
+* `Tier 4 - Unverified (Role-Based Fallback)`: Chưa tìm thấy tên riêng, gán chức danh theo ICP (`Breeder Owner / Kennel Manager` hoặc `Shelter Intake Director`) kèm kịch bản câu mở đầu Telesale: *"Hi, may I speak with the owner or the head breeder please?"* để Sales cập nhật ngược lại vào CRM.
+
+---
+
+## 10. Tiêu Chuẩn Phân Bổ Bảng Doanh Nghiệp: Mỗi Bảng Đúng 20 Tên (Batch Size = 20 Hot Leads)
+
+> [!IMPORTANT]
+> **QUY CHUẨN ĐÓNG GÓI BẢNG TỪ BAN GIÁM ĐỐC (THEO MẪU `priority-data-8-20261013.xlsx`):**
+> * Khi xuất dữ liệu khách hàng tiềm năng cho đội ngũ Telesales và Kế toán, **MỖI BẢNG / SHEET BẮT BUỘC CHỈ CHỨA ĐÚNG 20 TÊN KHÁCH HÀNG (20 LEADS PER BATCH)**.
+> * **Quy tắc phân bổ chiến lược:**
+>   - **Batch 01 (Top 1 - 20):** 20 khách hàng Tier S (Kim Cương) điểm cao nhất (95 - 85 điểm). Đây là các trại có đầy đủ SĐT, Email, Website, Kênh Amazon, có chủ trại xác thực và bài đăng mới nhất $\le 3$ giờ. Giao cho Top Performer Telesales chốt đơn Take-Home Kit V3.
+>   - **Batch 02 (Top 21 - 40):** 20 khách hàng Tier S tiếp theo, kèm ngữ cảnh thời tiết mưa lạnh/nắng gắt để chốt Combo Cỏ nhân tạo + Khay Potty.
+>   - **Batch 03 (Top 41 - 60):** 20 khách hàng Tier A (Vàng) phục vụ chuỗi Email Marketing tự động kết hợp gọi điện thoại.
+> * **Hiệu quả thực chiến:** Ngăn ngừa tình trạng nhân viên Telesales bị "ngợp" thông tin, đảm bảo mỗi khách hàng trong bảng 20 tên đều được nghiên cứu kỹ tiểu sử trước khi bấm số gọi điện.
+
+---
+
+## 11. Nguyên Tắc Bắt Buộc: Khóa Duy Nhất `FB_ID` Để Khử Trùng Lặp Tuyệt Đối
+
+> [!CAUTION]
+> **KHÔNG BAO GIỜ XUẤT BẢNG MÀ THIẾU TRƯỜNG `FB_ID`:**
+> * **Bản chất kỹ thuật:** Khách hàng có thể thay đổi tên trại, thay đổi URL Fanpage, hoặc nhân viên Telesales có thể cào trùng từ nhiều nguồn khác nhau. DUY NHẤT mã số **`FB_ID` (Numeric Facebook UID - ví dụ `100093401060941`)** là mã định danh số tĩnh vĩnh viễn không thể thay đổi.
+> * **Cơ chế chống trùng lặp (Strict Deduplication):**
+>   1. Sử dụng `FB_ID` làm khóa chính duy nhất (`Primary Deduplication Key`).
+>   2. Bất kỳ hồ sơ nào có `FB_ID` đã tồn tại trong các bảng đã bàn giao trước đó sẽ bị loại bỏ ngay lập tức, đảm bảo **100% không bao giờ có 2 nhân viên Sales gọi trùng 1 khách hàng**.
+>   3. Cho phép tải tệp 20 `FB_ID` trực tiếp lên trình quản lý quảng cáo Meta Ads để tạo tệp đối tượng tùy chỉnh (Custom Audience) chạy quảng cáo bám đuổi đồng thời.
+
+---
+
+## 12. Định Dạng Nguồn Dữ Liệu Doanh Nghiệp Chuẩn 37 Cột (Từ `priority-data-8-20261013.xlsx`)
+
+Hệ thống tích hợp toàn diện cấu trúc 37 cột doanh nghiệp từ [priority-data-8-20261013.xlsx](file:///c:/Users/ASUS/Downloads/Marketing_Pet&Grass/priority-data-8-20261013.xlsx) kết hợp bắt buộc với khóa `FB_ID`:
+
+| STT | Tên Cột Doanh Nghiệp | Dữ Liệu Tương Ứng Trong Phễu Pet Grass / Potty / Toys | Định Dạng Dữ Liệu |
+| :-: | :--- | :--- | :--- |
+| 1 | **邮箱地址** | Email kinh doanh của trại cún | `text (email chuẩn)` |
+| 2 | **邮箱地址状态** | Trạng thái email (`valid`) | `valid` |
+| 3 | **名字** | Tên gọi (First Name) của chủ trại cún | `text (Ví dụ: Javin, Tanya, Casey)` |
+| 4 | **姓氏** | Họ (Last Name) của chủ trại cún | `text` |
+| 5 | **全名** | Tên đầy đủ chủ trại (`Owner_Representative`) | `text (Ví dụ: Janky, Carolyn, Casey)` |
+| 6 | **用户社交** | Đường dẫn Facebook cá nhân / Fanpage | `https://www.facebook.com/...` |
+| 7 | **LinkedIn** | Đường dẫn LinkedIn (nếu có) | `url` |
+| 8 | **工作职位** | Vị trí (`Owner / Head Breeder / Founder`) | `text` |
+| 9 | **国家** | Quốc gia (`United States`) | `United States (100% thị trường Mỹ)` |
+| 10 | **地址** | Địa chỉ cơ sở chuồng trại (bóc tách từ Map where1=) | `text` |
+| 11 | **行业** | Ngành kinh doanh (`Dog Breeder / Pet Services`) | `Pet / Dog Breeding` |
+| 12 | **添加日期** | Ngày giờ ghi nhận vào hệ thống | `YYYY-MM-DD HH:mm:ss` |
+| 13 | **公司名称** | Tên trại cún (`Breeder Name` / Company Name) | `text (Ví dụ: Husker Doodles, Wonder Puppy)` |
+| 14 | **公司网址** | Website chính thức của trại cún | `https://...` (Đã giải mã Link Shim) |
+| 15 | **公司社交** | Tài khoản Instagram liên kết | `https://www.instagram.com/...` |
+| 16 | **公司规模** | Quy mô đàn giống & bài đăng | `1-10 dogs / 10-50 dogs` |
+| 17 | **公司所处国家** | Quốc gia đặt trụ sở | `United States` |
+| 18 | **公司位置** | Vị trí địa lý (Thành phố, Bang, Zip) | `City, State, Zip Code` |
+| 19 | **州** | Mã tiểu bang Hoa Kỳ (TX, FL, CA, WA, OH...) | `2 chữ cái in hoa (US State Code)` |
+| 20 | **城市** | Tên thành phố tại Mỹ | `text` |
+| 21 | **公司所在行业** | Phân khúc ngành hàng | `Pet Supplies Wholesale & Breeder B2B` |
+| 22 | **总部电话** | Số điện thoại văn phòng | `+1 XXX-XXX-XXXX` |
+| 23 | **电话** | Số điện thoại di động gọi trực tiếp | `+1 XXX-XXX-XXXX` |
+| 24 | **背调链接** | Link thẩm tra nhanh đối tác | `Facebook URL / Website` |
+| 25 | **测试打开次数** | Số lần mở thư thử nghiệm | `0` |
+| 26 | **客户等级** | Phân hạng đối tác (`Tier S` / `Tier A`) | `Tier S (Kim Cương) / Tier A (Vàng)` |
+| 27 | **打开网页** | Đường dẫn kiểm tra giao diện website trại | `https://...` |
+| 28 | **营销更新** | Thời gian đăng bài gần nhất (Recency) | `YYYY-MM-DD HH:mm:ss` |
+| 29 | **回复次数** | Số lượt bình luận trên bài viết | `integer` |
+| 30 | **营销打开次数** | Số lượt tương tác cảm xúc bài viết | `integer` |
+| 31 | **营销邮件次数** | Số lần gửi thư tiếp thị | `0` |
+| 32 | **营销邮件数量** | Tổng số email đã gửi | `0` |
+| 33 | **年级/班级** | Tên nhóm bảng 20 tên (`Batch_01_Top20`) | `Batch_XX (Top 20 Names)` |
+| 34 | **班级** | Nhóm danh sách | `20_Hot_Leads_Batch` |
+| 35 | **休眠原因** | Lý do không liên lạc được | `Trống` |
+| 36 | **remark** | Ghi chú chốt đơn (Sản phẩm mục tiêu + Thời tiết + Nhận diện chó) | `Combo Cỏ + Potty + Toys / Kịch bản Sales` |
+| 37 | **CRM NO. / FB_ID** | **`FB_ID` số độc nhất của Facebook (BẮT BUỘC 100%)** | **Khóa chính duy nhất loại bỏ trùng lặp** |
+
+
+

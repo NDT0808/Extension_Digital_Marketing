@@ -294,4 +294,10 @@ def run_amazon_pipeline(input_file=DEFAULT_INPUT_FILE, output_file=DEFAULT_OUTPU
     print("----------------------------------------------------\n")
 
 if __name__ == "__main__":
-    run_amazon_pipeline()
+    import sys
+    # Tự động nhận diện file đầu vào qua tham số dòng lệnh hoặc ưu tiên tệp khách hàng Mỹ mới tạo
+    default_inp = "US_Hot_Leads_Websites_For_Amazon_Pipeline.xlsx" if os.path.exists("US_Hot_Leads_Websites_For_Amazon_Pipeline.xlsx") else DEFAULT_INPUT_FILE
+    inp = sys.argv[1] if len(sys.argv) > 1 else default_inp
+    out = sys.argv[2] if len(sys.argv) > 2 else inp.replace('.xlsx', '_checked.xlsx')
+    run_amazon_pipeline(input_file=inp, output_file=out)
+

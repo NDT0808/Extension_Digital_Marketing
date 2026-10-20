@@ -1,0 +1,94 @@
+{
+  "phases": [
+    {
+      "id": "p1",
+      "phaseName": "Giai đoạn 1 (第一阶段) - Cào toàn bộ người theo dõi Good Dog & Khảo sát bộ công cụ Scraper (Good Dog粉丝全量采集与抓取工具体系构建)",
+      "timeRange": "Sáng (上午)",
+      "role": "1* Thu thập dữ liệu Good Dog & Nghiên cứu Scraper (Good Dog粉丝采集与工具调研)",
+      "tasks": [
+        {
+          "id": "t1-1",
+          "text": "1.1* Nghiên cứu, khảo sát và đánh giá các công cụ cào Facebook Followers: Thử nghiệm các giải pháp trích xuất dữ liệu Facebook Follower, đánh giá Outscraper, Graph API và Browser Extension để chọn giải pháp cào toàn bộ danh sách người dùng public trên trang Good Dog (Good Breeder Center) không bị chặn (Hoàn thành 80%)"
+        },
+        {
+          "id": "t1-2",
+          "text": "1.2* Triển khai công cụ cào tự động đa tác vụ Good Dog (fb_following_scraper Extension): Hoàn thiện tiện ích cào trang goodbreedercenter/followers, tự động cuộn trang (auto-scroll), bóc tách danh sách người theo dõi, bắt buộc trích xuất 100% FB_ID số, tích hợp cơ chế Checkpoint lưu trữ chống mất mát dữ liệu và tính năng xóa dữ liệu cũ cào lại từ đầu (Hoàn thành 80%)"
+        }
+      ],
+      "metricName": "Cào dữ liệu Good Dog & Công cụ (Good Dog采集与工具)",
+      "calculationMethod": "Thu thập thành công danh sách người theo dõi Good Dog và xây dựng công cụ cào tự động có Checkpoint",
+      "maxScore": 10,
+      "startTime": 8,
+      "endTime": 12,
+      "color": "bg-blue-500"
+    },
+    {
+      "id": "p2",
+      "phaseName": "Giai đoạn 2 (第二阶段) - Setup Server tự động hóa Model AI nhận diện chó & Đánh mã định danh ID (AI视觉模型自动化部署与ID编码入库)",
+      "timeRange": "Chiều (下午)",
+      "role": "2* Server Automation & AI Model chó (AI自动化与ID编码)",
+      "tasks": [
+        {
+          "id": "t2-1",
+          "text": "2.1* Setup server automation tích hợp model AI YOLOv8 (dog-model.onnx): Triển khai mô hình thị giác AI ONNX Runtime trực tiếp trong pipeline server/extension, tự động tiền xử lý ảnh đại diện (Avatar) của người theo dõi, nhận diện hình ảnh chó và phân loại đối tác tiềm năng theo thời gian thực (Hoàn thành 80%)"
+        },
+        {
+          "id": "t2-2",
+          "text": "2.2* Đánh số thứ tự chuẩn hóa Master ID theo từng khách hàng: Xây dựng hệ thống sinh mã ID tự động (LEAD-GD-000001 đến LEAD-GD-001059) gắn chặt với FB_ID số của Facebook, tổ chức lưu trữ cấu trúc dữ liệu khoa học trên server/storage đảm bảo tính toàn vẹn và truy xuất tức thì (Hoàn thành 80%)"
+        }
+      ],
+      "metricName": "AI Model & Server ID (AI模型与ID管理)",
+      "calculationMethod": "Tự động hóa nhận diện chó bằng model ONNX và đánh số thứ tự Master ID cho 80% khách hàng",
+      "maxScore": 10,
+      "startTime": 13,
+      "endTime": 16,
+      "color": "bg-indigo-600"
+    },
+    {
+      "id": "p3",
+      "phaseName": "Giai đoạn 3 (第三阶段) - Hợp nhất đa nguồn dữ liệu, Phân tích chân dung & Xuất báo cáo hoàn thiện cho Sales (全域数据聚合、线索画像分析与销讲报告交付)",
+      "timeRange": "Tối (晚上)",
+      "role": "3* Hợp nhất dữ liệu & Báo cáo Sales (数据聚合与销售报告)",
+      "tasks": [
+        {
+          "id": "t3-1",
+          "text": "3.1* Gom và hợp nhất đa nguồn dữ liệu khách hàng: Làm sạch và chuẩn hóa dữ liệu từ Facebook Followers, tri thức RAG 3.324 trại chó Mỹ, Bing/Google Maps và Facebook Intro; bóc tách đầy đủ 33 trường thông tin: Tên trại, Chủ sở hữu (Owner Representative), SĐT, Email, Website chính thức, Địa chỉ, Thành phố, Bang chuẩn Mỹ (loại bỏ triệt để lỗi rorState, static.xx và fake DE) (Hoàn thành 80%)"
+        },
+        {
+          "id": "t3-2",
+          "text": "3.2* Phân tích chân dung khách hàng, chấm điểm Lead Score & Mô hình bán hàng theo Thời tiết: Bóc tách ngày đăng bài gần nhất (Publish Time) tính điểm Recency, chấm điểm tiềm năng (0-100), phân hạng đối tác (Tier S/A/B/C) và thiết lập 3 kịch bản chốt đơn theo thời tiết vùng miền Mỹ (Mưa tuyết lạnh giá -> Cỏ thoát nước + Potty trong nhà; Nắng gắt Sunbelt -> Cỏ làm mát; Chó nhốt trong nhà -> Đồ chơi Chew Toys & Snuggle Puppy) (Hoàn thành 100%)"
+        },
+        {
+          "id": "t3-3",
+          "text": "3.3* Xuất bản gói báo cáo chuẩn chỉnh hoàn thiện bàn giao Team Sales: Xuất file Master CRM Excel cao cấp GoodDog_Followers_Master_CRM_2026-10-15.xlsx (đầy đủ 4 Sheet chuyên biệt, căn chỉnh lề chuẩn mực, freeze panes, auto-filter, tô màu phân cấp đối tác và thời tiết đẹp mắt dễ nhìn) kèm file CSV đồng bộ để chạy Facebook Ads (Hoàn thành 80%)"
+        }
+      ],
+      "metricName": "Hợp nhất dữ liệu & Báo cáo Sales (数据交付与销售赋能)",
+      "calculationMethod": "Bàn giao báo cáo Excel Master CRM 33 trường chuẩn chỉnh, đầy đủ thông tin phân tích gửi Team Sales",
+      "maxScore": 10,
+      "startTime": 16,
+      "endTime": 20,
+      "color": "bg-emerald-500"
+    }
+  ],
+  "dayState": {
+    "completedTasks": [
+      "t1-1",
+      "t1-2",
+      "t2-1",
+      "t2-2",
+      "t3-1",
+      "t3-2",
+      "t3-3"
+    ],
+    "scores": {
+      "p1": 10.0,
+      "p2": 10.0,
+      "p3": 10.0
+    },
+    "executorName": "Trong",
+    "importedFileName": "Trong_2026-10_14.json"
+  },
+  "version": "2.0",
+  "timestamp": "2026-10-15T13:30:00.000Z"
+}
